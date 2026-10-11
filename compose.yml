@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cafe_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    
+  backend:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - NODE_ENV=desarrollo
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2' #Se topea para el uso de 200% pensando en que como minimo se ejecutara en un I3 o ryzen3 de 4 nucleos
+          memory: 512M #Dado la version inicial y que no se esta usando Java con Springboot se decide topear en 512MB de uso permitido de RAM
+    ports:
+      - ${PUERTO}:3000
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+          condition: service_healthy
+    
+
+
+volumes:
+  pgdata:
