@@ -1,7 +1,7 @@
 import { QueryTypes, type Sequelize } from 'sequelize';
 import { type FacturacionResponseDTO, type MasVendidoResponseDTO } from '../interfaces/reportes.interface.js'
 
-export class ReporteModel {
+export class ReporteRepository {
     constructor(private readonly sequelize: Sequelize) {}
 
     async obtenerFacturacionTotal(): Promise<number> {
