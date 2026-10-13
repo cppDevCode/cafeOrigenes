@@ -1,4 +1,3 @@
-import type { promises } from "node:dns";
 import { type MasVendidoResponseDTO } from "../interfaces/reportes.interface.js";
 import { ReporteRepository } from "../repository/reporte.repository.js";
 

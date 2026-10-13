@@ -5,11 +5,11 @@ export interface DbConfig {
     username?: string;
     password?: string;
     host?: string;
-    port?: number | string;
-    dialect: Options['dialect'];
+    port?: number;
+    dialect: NonNullable<Options['dialect']>;
     logging: boolean | ((sql: string, ...params: unknown[]) => void);
-    pool?: Options['pool'];
-    dialectOptions?: Options['dialectOptions'];
+    pool?: NonNullable<Options['pool']>;
+    dialectOptions?: NonNullable<Options['dialectOptions']>;
 }
 
 export interface DatabaseConfig {
