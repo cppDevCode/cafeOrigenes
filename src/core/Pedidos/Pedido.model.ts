@@ -20,7 +20,7 @@ export class PedidoModel extends Model {
 export function initPedidoModel(sequelize: Sequelize): void {
     PedidoModel.init({
         id:{ type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        estado: { type: DataTypes.STRING(20), alloWNull: false, defaultValue: 'PENDIENTE' },
+        estado: { type: DataTypes.STRING(20), allowNull: false, defaultValue: 'PENDIENTE' },
         total: {type: DataTypes.DECIMAL(10, 2), allowNull: false },
     },
     {sequelize, tableName: 'pedidos', timestamps: false},
@@ -38,7 +38,7 @@ export function initPedidoModel(sequelize: Sequelize): void {
 
     PedidoModel.hasMany(PedidoItemModel, {foreignKey: 'pedidoId', as: 'items'});
     PedidoItemModel.belongsTo(PedidoModel, {foreignKey: 'pedidoId'});
-    
+
     }
 
 
