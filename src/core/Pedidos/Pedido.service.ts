@@ -1,6 +1,6 @@
 import type { CrearPedidoDTO, IItemPedido, IPedido, IPedidoRepository } from '../../interfaces/pedido.interface.js';
 import type { IProductoRepository } from '../../interfaces/producto.interface.js';
-import { Pedido } from './Pedidos.js';
+import { Pedido } from './Pedido.js';
 
 export class ProductoNoEncontradoError extends Error {
     constructor (public readonly productoID: number) {
