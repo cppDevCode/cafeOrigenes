@@ -5,21 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "build": "tsc",
+    "build": "tsc6",
     "start": "node dist/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "lint-staged": {
+    "*.{js,ts}": "eslint --fix"
+  },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "npm:@typescript/typescript6",
+    "typescript-eslint": "^8.71.1"
   },
   "dependencies": {
     "cors": "^2.8.6",
