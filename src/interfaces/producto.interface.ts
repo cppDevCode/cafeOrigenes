@@ -19,7 +19,7 @@ export interface IProductoRepository {
     findAll(): Promise<IProducto[]>;
 }
 
-export interface ProductoRespondeDTO {
+export interface ProductoResponseDTO {
     id: number;
     nombre: string;
     tipo: TipoProducto;

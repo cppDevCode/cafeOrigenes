@@ -6,15 +6,9 @@ export interface FacturacionResponseDTO {
 /**Cantidad vendida por producto */
 export type CantidadVendidaPorProducto = Record<string, number>;
 
-/**GET /reportes/mas-vendido */
+/** GET /reportes/mas-vendido. Sin ventas responde 404 */
 export interface MasVendidoResponseDTO {
     productoId: number;
     nombre:string;
     cantidadVendida: number;
-}
-
-//Sin ventas: GET reportes/mas-vendido -> 404 con ErrorResponseDTO
-export interface IReporteRepository {
-    facturacionTotal(): Promise<number>;
-    cantidadVendidaPorProducto(): Promise<{ productoId: number; nombre: string; cantidadVendida: number }[]>;
 }

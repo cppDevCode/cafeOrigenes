@@ -1,6 +1,6 @@
 export type EstadoPedido= 'PENDIENTE' | 'EN_PREPARACION'| 'ENTREGADO';
 
-export interface ItemPedido {
+export interface IItemPedido {
     id?: number;
     productoId: number;
     cantidad: number;
@@ -9,7 +9,7 @@ export interface ItemPedido {
 
 export interface IPedido {
     id?: number;
-    items: ItemPedido[];
+    items: IItemPedido[];
     estado: EstadoPedido;  // se crea siempre como 'PENDIENTE'
     total: number;
 }
