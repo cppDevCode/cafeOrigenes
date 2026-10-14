@@ -7,7 +7,7 @@
     "dev": "tsx watch src/app.ts",
     "build": "tsc6",
     "start": "node dist/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "lint": "eslint .",
     "prepare": "husky"
   },
@@ -30,7 +30,8 @@
     "lint-staged": "^17.6.0",
     "tsx": "^4.23.15",
     "typescript": "npm:@typescript/typescript6",
-    "typescript-eslint": "^8.71.1"
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.4"
   },
   "dependencies": {
     "cors": "^2.8.6",
