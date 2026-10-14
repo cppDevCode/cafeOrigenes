@@ -17,7 +17,7 @@ export class PedidoModel extends Model {
 }
 
 /**Llama una vez al iniciar la app, pasando la instancia de Sequelize  */
-export function initPedidoModel(sequelize: Sequelize): void {
+export function initPedidoModels(sequelize: Sequelize): void {
     PedidoModel.init({
         id:{ type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
         estado: { type: DataTypes.STRING(20), allowNull: false, defaultValue: 'PENDIENTE' },
