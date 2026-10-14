@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { sequelize } from '../../../config/database.js';
+import { sequelize } from '../../../config/BaseDeDatos.js';
 import { initPedidoModels, PedidoItemModel, PedidoModel } from '../Pedido.model.js';
 import { PedidoService } from '../Pedido.service.js';
 import { createPedidoRouter } from '../Pedido.routes.js';

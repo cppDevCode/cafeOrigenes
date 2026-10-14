@@ -5,7 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { sequelize } from "../config/database.js";
+import { sequelize } from "../config/BaseDeDatos.js";
 import type { IProductoRepository } from "../interfaces/producto.interface.js";
 import { initPedidoModels } from "./Pedidos/Pedido.model.js";
 import { PedidoService } from "./Pedidos/Pedido.service.js";
