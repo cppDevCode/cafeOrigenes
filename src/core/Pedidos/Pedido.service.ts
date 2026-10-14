@@ -5,8 +5,8 @@ import { Pedido } from './Pedido.js';
 import { PedidoItemModel, PedidoModel } from './Pedido.model.js';
 
 export class ProductoNoEncontradoError extends Error {
-    constructor (public readonly productoID: number) {
-        super (`El producto ${productoID} no fue encontrado`);
+    constructor (public readonly productoId: number) {
+        super (`El producto ${productoId} no fue encontrado`);
         this.name = 'ProductoNoEncontradoError';
     }
 }
