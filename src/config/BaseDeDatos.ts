@@ -1,4 +1,6 @@
-import type { DatabaseConfig } from '../interfaces/dbConfig.interface.js'
+import { Sequelize, type Options } from 'sequelize';
+import 'dotenv/config';
+import type { DatabaseConfig } from '../interfaces/dbConfig.interface.js';
 
 export const config: DatabaseConfig = {
   development: {
@@ -19,7 +21,7 @@ export const config: DatabaseConfig = {
   test: {
     username: process.env.DB_USER || 'app_user',
     password: process.env.DB_PASSWORD || 'app_password',
-    database: process.env.DB_NAME + '_test' || 'app_database_test',
+    database: (process.env.DB_NAME ?? 'app_database') + '_test',
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 5433,
     dialect: 'postgres',
@@ -47,5 +49,9 @@ export const config: DatabaseConfig = {
     }
   }
 };
+
+const entorno = (process.env.NODE_ENV ?? 'development') as keyof DatabaseConfig;
+
+export const sequelize = new Sequelize(config[entorno] as Options);
 
 export default config;

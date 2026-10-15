@@ -14,12 +14,6 @@ export interface IPedido {
     total: number;
 }
 
-export interface IPedidoRepository {
-    guardar(pedido: Omit<IPedido, 'id'>): Promise<IPedido>;
-    findById(id: number): Promise<IPedido | null>;
-    findAll(): Promise<IPedido[]>;
-}
-
 // DTOs HTTP
 
 /**POST /pedidos */

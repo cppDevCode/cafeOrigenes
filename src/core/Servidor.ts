@@ -6,7 +6,11 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-
+import { sequelize } from "../config/BaseDeDatos.js";
+import type { IProductoRepository } from "../interfaces/producto.interface.js";
+import { initPedidoModels } from "../model/Pedido.model.js";
+import { PedidoService } from "../service/Pedido.service.js";
+import { createPedidoRouter } from "../routes/Pedido.routes.js";
 //Clase Servidor
 export class Servidor {
   private enrutador: Enrutador = new Enrutador();
@@ -55,6 +59,21 @@ export class Servidor {
         uptime: process.uptime(),
       });
     });
+
+    // Módulo de Pedidos
+    initPedidoModels(sequelize);
+
+    const IProductoRepository: IProductoRepository = {
+      findById: async () => {
+        throw new Error("Método findById no implementado");
+      },
+      findAll: async () => {
+        throw new Error("Método findAll no implementado");
+      },
+    }
+    const pedidoService = new PedidoService(IProductoRepository, sequelize);
+    this.app.use("/Pedidos", createPedidoRouter(pedidoService));
+    
     // Manejo de rutas no encontradas (sin "*")
     this.app.use((req, res) => {
     res.status(404).json({ error: "Route not found" });
