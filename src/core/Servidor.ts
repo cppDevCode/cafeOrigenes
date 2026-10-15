@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { type Application } from "express";
+import Enrutador from '../routes/index.route.js'
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -12,6 +13,7 @@ import { PedidoService } from "./Pedidos/Pedido.service.js";
 import { createPedidoRouter } from "./Pedidos/Pedido.routes.js";
 //Clase Servidor
 export class Servidor {
+  private enrutador: Enrutador = new Enrutador();
   private app: Application;
   private port: string;
   /*Metodo Constructor que mediante el metodo dotenv vuelca los datos de las
@@ -48,6 +50,7 @@ export class Servidor {
   }
 
   private rutas() {    
+    this.app.use("/api", this.enrutador.getRoutes());
     // Health check en la raíz
     this.app.get("/health", (req, res) => {
       res.status(200).json({
