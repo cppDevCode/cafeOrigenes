@@ -1,5 +1,5 @@
 import {DataTypes, Model, type Sequelize} from 'sequelize';
-import type {EstadoPedido} from '../../interfaces/pedido.interface.js';
+import type {EstadoPedido} from '../interfaces/pedido.interface.js';
 
 export class PedidoItemModel extends Model {
     declare id: number;

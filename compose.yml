@@ -22,7 +22,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      - NODE_ENV=desarrollo
+      - NODE_ENV=development
       - DB_HOST=postgres
       - DB_PORT=5432
     restart: always
@@ -32,7 +32,7 @@ services:
           cpus: '2' #Se topea para el uso de 200% pensando en que como minimo se ejecutara en un I3 o ryzen3 de 4 nucleos
           memory: 512M #Dado la version inicial y que no se esta usando Java con Springboot se decide topear en 512MB de uso permitido de RAM
     ports:
-      - ${PUERTO}:3000
+      - ${PUERTO}:3002
     env_file:
       - .env
     depends_on:

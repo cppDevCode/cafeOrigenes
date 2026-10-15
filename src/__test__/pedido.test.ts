@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {Pedido} from '../Pedido.js';
+import {Pedido} from '../model/Pedido.js';
 
 describe('Pedido- cálculo del total', () => {
     it('suma precioUnitario * cantidad de todos los ítems', () => {

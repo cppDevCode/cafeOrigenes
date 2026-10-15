@@ -2,11 +2,11 @@ import 'dotenv/config';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { sequelize } from '../../../config/BaseDeDatos.js';
-import { initPedidoModels, PedidoItemModel, PedidoModel } from '../Pedido.model.js';
-import { PedidoService } from '../Pedido.service.js';
-import { createPedidoRouter } from '../Pedido.routes.js';
-import type { IProducto, IProductoRepository } from '../../../interfaces/producto.interface.js';
+import { sequelize } from '../config/BaseDeDatos.js';
+import { initPedidoModels, PedidoItemModel, PedidoModel } from '../model/Pedido.model.js';
+import { PedidoService } from '../service/Pedido.service.js';
+import { createPedidoRouter } from '../routes/Pedido.routes.js';
+import type { IProducto, IProductoRepository } from '../interfaces/producto.interface.js';
 
 
 const productoStub = (id: number, precio: number): IProducto => ({
@@ -92,6 +92,7 @@ describe('Pedidos (integración)', () => {
       expect(res.body[0].total).toBe(5020);
       expect(res.body[1].total).toBe(7500);
       expect(res.body[1].items[0]).toMatchObject({ productoId: 2, cantidad: 3 });
+    
     });
   });
 });

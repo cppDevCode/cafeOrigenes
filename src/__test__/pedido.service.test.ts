@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, type Mocked } from 'vitest';
 import type { Sequelize } from 'sequelize';
-import { PedidoService, ProductoNoEncontradoError } from '../Pedido.service.js';
-import type { IProducto, IProductoRepository } from '../../../interfaces/producto.interface.js';
+import { PedidoService, ProductoNoEncontradoError } from '../service/Pedido.service.js';
+import type { IProducto, IProductoRepository } from '../interfaces/producto.interface.js';
  
 //Producto de prueba
 //precioBase es distinto del precio final para comprobar que se usa calcularPrecio()

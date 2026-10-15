@@ -8,9 +8,9 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import { sequelize } from "../config/BaseDeDatos.js";
 import type { IProductoRepository } from "../interfaces/producto.interface.js";
-import { initPedidoModels } from "./Pedidos/Pedido.model.js";
-import { PedidoService } from "./Pedidos/Pedido.service.js";
-import { createPedidoRouter } from "./Pedidos/Pedido.routes.js";
+import { initPedidoModels } from "../model/Pedido.model.js";
+import { PedidoService } from "../service/Pedido.service.js";
+import { createPedidoRouter } from "../routes/Pedido.routes.js";
 //Clase Servidor
 export class Servidor {
   private enrutador: Enrutador = new Enrutador();

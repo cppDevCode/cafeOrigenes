@@ -1,4 +1,4 @@
-import type { EstadoPedido, IItemPedido, IPedido} from '../../interfaces/pedido.interface.js';
+import type { EstadoPedido, IItemPedido, IPedido} from '../interfaces/pedido.interface.js';
 
 export class Pedido implements IPedido {
     readonly id?: number;

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { type PedidoService, ProductoNoEncontradoError } from './Pedido.service.js';
+import { type PedidoService, ProductoNoEncontradoError } from '../service/Pedido.service.js';
 
 export function createPedidoRouter(service: PedidoService): Router {
     const router = Router();
