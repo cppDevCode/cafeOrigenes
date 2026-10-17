@@ -12,3 +12,8 @@ export interface MasVendidoResponseDTO {
     nombre:string;
     cantidadVendida: number;
 }
+
+export interface IReporteRepository {
+    obtenerFacturacionTotal(): Promise<number>;
+    obtenerMasVendido(): Promise<MasVendidoResponseDTO | null>;
+}
