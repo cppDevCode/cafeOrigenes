@@ -5,14 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "dev:seed": "tsx src/migrations/seed.ts && tsx watch src/app.ts",
     "build": "tsc6",
-    "start": "node dist/migrations/seed.js && node dist/app.js",
+    "start": "node dist/app.js",
     "test": "cross-env NODE_ENV=test vitest run",
     "lint": "eslint .",
     "prepare": "husky",
     "seed": "tsx src/migrations/seed.ts",
-    "migrate": "tsx src/migrations/seed.ts"
+    "migrate": "tsx src/migrations/raw.ts"
   },
   "keywords": [],
   "author": "",

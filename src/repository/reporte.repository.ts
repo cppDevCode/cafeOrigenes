@@ -24,7 +24,7 @@ export class ReporteRepository implements IReporteRepository {
                                                            pr.nombre,
                                                            SUM(ip.cantidad)::int AS "cantidadVendida"
                                                     FROM
-                                                        (items_pedido ip join productos pr
+                                                        (pedido_items ip join productos pr
                                                         on ip.producto_id = pr.id) join pedidos p
                                                         on ip.pedido_id = p.id
                                                     WHERE

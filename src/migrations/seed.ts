@@ -21,7 +21,7 @@ const productosIniciales: ProductoSeed[] = [
   { id: 10, nombre: 'Alfajor Marplatense de Chocolate', tipo: 'PASTELERIA', precioBase: 1800 },
 ];
 
-export async function sembrar150Datos() {
+export async function sembrar150Datos(): Promise<void> {
   try {
     console.log('--- Iniciando migración y sembrado de 150 datos de prueba ---');
     await sequelize.authenticate();
@@ -62,17 +62,24 @@ export async function sembrar150Datos() {
     for (const prod of productosIniciales) {
       await sequelize.query(
         `INSERT INTO productos (id, nombre, tipo, precio_base) VALUES (:id, :nombre, :tipo, :precioBase);`,
-        { replacements: prod }
+        {
+          replacements: {
+            id: prod.id,
+            nombre: prod.nombre,
+            tipo: prod.tipo,
+            precioBase: prod.precioBase,
+          },
+        }
       );
     }
     console.log(`Se insertaron ${productosIniciales.length} productos en el catálogo.`);
 
     // 4. Generar 150 pedidos con sus respectivos items
     // Distribución: 115 ENTREGADO, 25 PENDIENTE, 10 CANCELADO
-    const estados = [
-      ...Array(115).fill('ENTREGADO'),
-      ...Array(25).fill('PENDIENTE'),
-      ...Array(10).fill('CANCELADO'),
+    const estados: string[] = [
+      ...Array<string>(115).fill('ENTREGADO'),
+      ...Array<string>(25).fill('PENDIENTE'),
+      ...Array<string>(10).fill('CANCELADO'),
     ];
 
     let totalFacturacionEntregados = 0;
@@ -80,7 +87,7 @@ export async function sembrar150Datos() {
     let totalItemsGenerados = 0;
 
     for (let i = 1; i <= 150; i++) {
-      const estado = estados[i - 1];
+      const estado = estados[i - 1] ?? 'ENTREGADO';
 
       // Cada pedido tendrá entre 1 y 3 items
       // Usamos una lógica pseudoaleatoria determinística basada en el índice
@@ -90,7 +97,7 @@ export async function sembrar150Datos() {
       for (let j = 0; j < cantidadItems; j++) {
         // Seleccionamos un producto variando con i y j
         const prodIndex = (i * 3 + j * 7) % productosIniciales.length;
-        const producto = productosIniciales[prodIndex];
+        const producto = productosIniciales[prodIndex] ?? productosIniciales[0]!;
         const cantidad = ((i + j) % 4) + 1; // Entre 1 y 4 unidades
         const precioUnitario = producto.precioBase;
         const subtotal = cantidad * precioUnitario;
@@ -117,14 +124,18 @@ export async function sembrar150Datos() {
       }
 
       // Insertar pedido
-      const [pedidoInsertResult] = await sequelize.query(
+      const [pedidoInsertResult] = (await sequelize.query(
         `INSERT INTO pedidos (estado, total) VALUES (:estado, :total) RETURNING id;`,
         {
           replacements: { estado, total: totalPedido },
         }
-      ) as [{ id: number }[], unknown];
+      )) as [{ id: number }[], unknown];
 
-      const pedidoId = pedidoInsertResult[0].id;
+      const primerPedido = pedidoInsertResult[0];
+      if (!primerPedido) {
+        throw new Error('Error al insertar pedido: no se obtuvo ID');
+      }
+      const pedidoId = primerPedido.id;
 
       // Insertar items del pedido
       for (const item of itemsDelPedido) {
@@ -174,6 +185,4 @@ export async function sembrar150Datos() {
   }
 }
 
-// Ejecutar si se llama directamente
-sembrar150Datos();
 
