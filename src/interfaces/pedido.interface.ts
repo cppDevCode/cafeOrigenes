@@ -28,3 +28,9 @@ export interface PedidoResponseDTO {
     total: number;
     items:{id: number; productoId:number; cantidad: number; precioUnitario: number}[];
 }
+
+export interface IPedidoRepository {
+    guardar(pedido: IPedido): Promise<IPedido>;
+    findAll(): Promise<IPedido[]>;
+    findById(id: number): Promise<IPedido | null>;
+}

@@ -48,3 +48,27 @@ describe('PedidoService.armarPedido', () => {
     ).rejects.toBeInstanceOf(ProductoNoEncontradoError);
   });
 });
+
+describe('PedidoService con repositorio', () => {
+  it('delega listar y obtener al repositorio', async () => {
+    const mockRepo = {
+      guardar: vi.fn(),
+      findAll: vi.fn().mockResolvedValue([{ id: 1, items: [], estado: 'PENDIENTE', total: 100 }]),
+      findById: vi.fn().mockResolvedValue({ id: 1, items: [], estado: 'PENDIENTE', total: 100 }),
+    };
+    const mockProductos: Mocked<IProductoRepository> = {
+      findById: vi.fn(),
+      findAll: vi.fn(),
+    };
+
+    const service = new PedidoService(mockProductos, mockRepo);
+
+    const lista = await service.listar();
+    expect(lista).toHaveLength(1);
+    expect(mockRepo.findAll).toHaveBeenCalledOnce();
+
+    const pedido = await service.obtener(1);
+    expect(pedido?.id).toBe(1);
+    expect(mockRepo.findById).toHaveBeenCalledWith(1);
+  });
+});
