@@ -22,7 +22,8 @@ export function createPedidoRouter(service: PedidoService): Router {
     router.get('/', async (req, res) => {
         try {
             res.json(await service.listar());
-        } catch {
+        } catch (error) {
+            console.error('Error en GET /pedidos:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     });
@@ -37,7 +38,8 @@ export function createPedidoRouter(service: PedidoService): Router {
                 return;
             }
             res.json(pedido);
-        } catch {
+        } catch (error) {
+            console.error('Error en GET /pedidos/:id:', error);
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     });

@@ -11,6 +11,8 @@ import { ProductoRepository } from "../repository/producto.repository.js";
 import { initPedidoModels } from "../model/Pedido.model.js";
 import { PedidoService } from "../service/Pedido.service.js";
 import { createPedidoRouter } from "../routes/Pedido.routes.js";
+import { migrar } from "../migrations/raw.js";
+import { sembrar150Datos } from "../migrations/seed.js";
 //Clase Servidor
 export class Servidor {
   private enrutador: Enrutador = new Enrutador();
@@ -86,11 +88,10 @@ export class Servidor {
       //await sequelize.authenticate();
       console.log("Coneccion Establecida");
 
-      // En desarrollo, sincronizar modelos
-      if (process.env.NODE_ENV === "development") {
-        //await sequelize.sync({ alter: false });
-        console.log("Base de datos Sincronizada");        
-      }
+      // Ejecutar migraciones si las tablas no existen (usando raw.ts)
+      await migrar(false);
+      await sembrar150Datos();
+      console.log("Base de datos Sincronizada");
 
       this.app.listen(this.port, () => {
         console.log(`Esta corriendo la api en el puerto: ${this.port}`);

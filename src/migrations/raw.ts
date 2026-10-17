@@ -1,9 +1,19 @@
 import { sequelize } from '../config/BaseDeDatos.js';
 
-async function migrar() {
+export async function migrar(cerrarConexion = false): Promise<void> {
   try {
     await sequelize.authenticate();
-    console.log('Conexión establecida');
+    console.log('Conexión establecida con la base de datos');
+
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS productos (
+        id SERIAL PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        tipo VARCHAR(50) NOT NULL,
+        precio_base DECIMAL(10,2) NOT NULL
+      );
+    `);
+    console.log('Tabla "productos" creada (o ya existía)');
 
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS pedidos (
@@ -26,6 +36,10 @@ async function migrar() {
     console.log('Tabla "pedido_items" creada (o ya existía)');
 
     await sequelize.query(`
+      CREATE OR REPLACE VIEW items_pedido AS
+        SELECT id, pedido_id, producto_id, cantidad, precio_unitario FROM pedido_items;
+    `);
+    console.log('Vista "items_pedido" creada (o ya existía)');
       CREATE TABLE IF NOT EXISTS productos (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL UNIQUE,
@@ -55,11 +69,16 @@ async function migrar() {
     console.log('Tablas en la base de datos:');
     console.table(tablas);
   } catch (error) {
-    console.error('Error al migrar:', error);
-    process.exit(1);
+    console.error('Error al ejecutar migración raw:', error);
+    throw error;
   } finally {
-    await sequelize.close();
+    if (cerrarConexion) {
+      await sequelize.close();
+    }
   }
 }
 
-migrar();
+// Ejecución directa por CLI (ej. tsx src/migrations/raw.ts o node dist/migrations/raw.js)
+if (process.argv[1]?.endsWith('raw.ts') || process.argv[1]?.endsWith('raw.js')) {
+  migrar(true).catch(() => process.exit(1));
+}

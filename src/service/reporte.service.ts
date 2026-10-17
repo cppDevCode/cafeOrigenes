@@ -1,8 +1,7 @@
-import { type MasVendidoResponseDTO } from "../interfaces/reportes.interface.js";
-import { ReporteRepository } from "../repository/reporte.repository.js";
+import { type IReporteRepository, type MasVendidoResponseDTO } from "../interfaces/reportes.interface.js";
 
 export class ReporteService {
-    constructor(private readonly reporteRepository: ReporteRepository) {
+    constructor(private readonly reporteRepository: IReporteRepository) {
     }
 
     async obtenerFacturacionTotal(): Promise<number> {
