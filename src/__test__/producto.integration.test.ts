@@ -1,56 +1,39 @@
-import 'dotenv/config';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mocked } from 'vitest';
 import express from 'express';
 import request from 'supertest';
-import { sequelize } from '../config/BaseDeDatos.js';
-import { ProductoRouter } from '../routes/producto.route.js';
+import type { IProducto, IProductoRepository } from '../interfaces/producto.interface.js';
+import { CafeExpreso } from '../model/cafeExpreso.model.js';
+import { CafeFiltrado } from '../model/cafeFiltrado.model.js';
+import { Pasteleria } from '../model/pasteleria.model.js';
+import { ProductoService } from '../service/producto.service.js';
+import { ProductoController } from '../controller/producto.controller.js';
 
-const app = express();
-app.use(express.json());
-app.use('/productos', new ProductoRouter().getRouter());
 
-describe('Productos (integración)', () => {
-    beforeAll(async () => {
-        if (process.env.NODE_ENV !== 'test') throw new Error('Estos tests solo corren con NODE_ENV=test');
+    const catalogo = new Map<number, IProducto>([
+    [1, new CafeExpreso(1, 'Expreso Pocillo Brasil', 2500, 'POCILLO', 18, 'BRASIL')],
+    [2, new Pasteleria(2, 'Muffin de chocolate', 2500)],
+    [3, new CafeFiltrado(3, 'Filtrado Mediano Colombia', 3200, 'MEDIANO', 15, 'COLOMBIA')],
+    ]);
 
-        // productos no tiene modelo de Sequelize, así que sync() no la crea: la creamos con SQL
-        await sequelize.query(`
-        CREATE TABLE IF NOT EXISTS productos (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL UNIQUE,
-            tipo VARCHAR(20) NOT NULL
-            CHECK (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO', 'PASTELERIA')),
-            precio_base INTEGER NOT NULL CHECK (precio_base > 0),
-            tamano VARCHAR(20)
-            CHECK (tamano IN ('POCILLO', 'MEDIANO', 'TAZA_GRANDE')),
-            gramos INTEGER CHECK (gramos > 0),
-            variedad VARCHAR(20)
-            CHECK (variedad IN ('BRASIL', 'COLOMBIA', 'ETIOPIA')),
+    describe('Productos', () => {
+    let repo: Mocked<IProductoRepository>;
+    let app: express.Express;
 
-            CONSTRAINT chk_cafe_o_pasteleria CHECK (
-            (tipo = 'PASTELERIA'
-                AND tamano IS NULL AND gramos IS NULL AND variedad IS NULL)
-            OR
-            (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO')
-                AND tamano IS NOT NULL AND gramos IS NOT NULL AND variedad IS NOT NULL)
-            )
-        );
-        `);
-    });
+    beforeEach(() => {
+        repo = {
+        findById: vi.fn(async (id: number) => catalogo.get(id) ?? null),
+        findAll: vi.fn(async () => [...catalogo.values()]),
+        };
 
-    beforeEach(async () => {
-        // Datos conocidos: id 1 = café expreso, id 2 = pastelería, id 3 = café filtrado
-        await sequelize.query('TRUNCATE productos RESTART IDENTITY');
-        await sequelize.query(`
-        INSERT INTO productos (nombre, tipo, precio_base, tamano, gramos, variedad) VALUES
-            ('Expreso Pocillo Brasil', 'CAFE_EXPRESO', 2500, 'POCILLO', 18, 'BRASIL'),
-            ('Muffin de chocolate', 'PASTELERIA', 2500, NULL, NULL, NULL),
-            ('Filtrado Mediano Colombia', 'CAFE_FILTRADO', 3200, 'MEDIANO', 15, 'COLOMBIA');
-        `);
-    });
+        // Mismo cableado que ProductoRouter, pero con el repository falso
+        const controller = new ProductoController(new ProductoService(repo));
+        const router = express.Router();
+        router.get('/', controller.listar);
+        router.get('/:id', controller.obtenerPorId);
 
-    afterAll(async () => {
-        await sequelize.close();
+        app = express();
+        app.use(express.json());
+        app.use('/productos', router);
     });
 
     describe('GET /productos', () => {
@@ -65,12 +48,21 @@ describe('Productos (integración)', () => {
         });
 
         it('devuelve una lista vacía si no hay productos', async () => {
-        await sequelize.query('TRUNCATE productos RESTART IDENTITY');
+        repo.findAll.mockResolvedValueOnce([]);
 
         const res = await request(app).get('/productos');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual([]);
+        });
+
+        it('responde 500 si el repository falla', async () => {
+        repo.findAll.mockRejectedValueOnce(new Error('falla de base de datos'));
+
+        const res = await request(app).get('/productos');
+
+        expect(res.status).toBe(500);
+        expect(res.body).toHaveProperty('error');
         });
     });
 
@@ -89,6 +81,7 @@ describe('Productos (integración)', () => {
             variedad: 'BRASIL',
             precio: 5020,
         });
+        expect(repo.findById).toHaveBeenCalledWith(1);
         });
 
         it('devuelve la pastelería sin tamaño, gramos ni variedad', async () => {
@@ -108,11 +101,20 @@ describe('Productos (integración)', () => {
         expect(res.body).toHaveProperty('error');
         });
 
-        it('responde 400 si el id no es un número', async () => {
+        it('responde 400 si el id no es un número y no consulta el repository', async () => {
         const res = await request(app).get('/productos/abc');
 
         expect(res.status).toBe(400);
         expect(res.body).toHaveProperty('error');
+        expect(repo.findById).not.toHaveBeenCalled();
+        });
+
+        it('responde 500 si el repository falla', async () => {
+        repo.findById.mockRejectedValueOnce(new Error('falla de base de datos'));
+
+        const res = await request(app).get('/productos/1');
+
+        expect(res.status).toBe(500);
         });
     });
-});
+    });
