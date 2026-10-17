@@ -4,7 +4,7 @@ import type {
     TamanoCafe,
     VariedadCafe,
 } from '../interfaces/producto.interface.js';
-import { PRECIO_POR_GRAMO } from './precioPorGramo.js';
+import { PRECIO_POR_GRAMO } from '../utils/precioPorGramo.utils.js';
 
 export abstract class Cafe implements IProducto {
     abstract readonly tipo: TipoProducto;
