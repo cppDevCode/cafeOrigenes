@@ -7,7 +7,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import { sequelize } from "../config/BaseDeDatos.js";
-import type { IProductoRepository } from "../interfaces/producto.interface.js";
+import { ProductoRepository } from "../repository/producto.repository.js";
 import { initPedidoModels } from "../model/Pedido.model.js";
 import { PedidoService } from "../service/Pedido.service.js";
 import { createPedidoRouter } from "../routes/Pedido.routes.js";
@@ -63,15 +63,9 @@ export class Servidor {
     // Módulo de Pedidos
     initPedidoModels(sequelize);
 
-    const IProductoRepository: IProductoRepository = {
-      findById: async () => {
-        throw new Error("Método findById no implementado");
-      },
-      findAll: async () => {
-        throw new Error("Método findAll no implementado");
-      },
-    }
-    const pedidoService = new PedidoService(IProductoRepository, sequelize);
+    const productoRepository = new ProductoRepository(sequelize);
+    const pedidoService = new PedidoService(productoRepository, sequelize);
+    
     this.app.use("/Pedidos", createPedidoRouter(pedidoService));
     
     // Manejo de rutas no encontradas (sin "*")
