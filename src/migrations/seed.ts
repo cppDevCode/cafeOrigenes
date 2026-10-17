@@ -180,9 +180,7 @@ export async function sembrar150Datos(): Promise<void> {
   } catch (error) {
     console.error('Error durante la migración:', error);
     process.exit(1);
-  } finally {
-    await sequelize.close();
-  }
+  } 
 }
 
 
