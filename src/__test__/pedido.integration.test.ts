@@ -4,7 +4,7 @@ import request from 'supertest';
 import type { Sequelize } from 'sequelize';
 import { PedidoItemModel, PedidoModel } from '../model/Pedido.model.js';
 import { PedidoService } from '../service/Pedido.service.js';
-import { createPedidoRouter } from '../routes/Pedido.routes.js';
+import { createPedidoRouter } from '../routes/pedido.routes.js';
 import type { IProducto, IProductoRepository } from '../interfaces/producto.interface.js';
 
 // Stub de productos
@@ -139,6 +139,33 @@ describe('Pedidos (integración con mocks)', () => {
       expect(res.body[0].total).toBe(5020);
       expect(res.body[1].total).toBe(7500);
       expect(res.body[1].items[0]).toMatchObject({ productoId: 2, cantidad: 3, precioUnitario: 2500 });
+    });
+  });
+
+  // GET /pedidos/:id
+  describe('GET /pedidos/:id', () => {
+    it('devuelve el pedido con sus items si existe', async () => {
+      vi.mocked(PedidoModel.findByPk).mockResolvedValueOnce({
+        id: 1,
+        estado: 'PENDIENTE',
+        total: '5020.00',
+        items: [filaItem(1, 1, 1, 1, '5020.00')],
+      } as unknown as Fila);
+
+      const res = await request(app).get('/pedidos/1');
+
+      expect(res.status).toBe(200);
+      expect(res.body).toMatchObject({ id: 1, estado: 'PENDIENTE', total: 5020 });
+      expect(res.body.items).toHaveLength(1);
+    });
+
+    it('responde 404 si el pedido no existe', async () => {
+      vi.mocked(PedidoModel.findByPk).mockResolvedValueOnce(null);
+
+      const res = await request(app).get('/pedidos/999');
+
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual({ error: 'Pedido no encontrado' });
     });
   });
 });

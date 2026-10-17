@@ -8,6 +8,9 @@
     "build": "tsc6",
     "start": "node dist/app.js",
     "test": "cross-env NODE_ENV=test vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "lint": "eslint .",
     "prepare": "husky",
     "migrar": "tsx src/migrations/raw.ts",
@@ -21,6 +24,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",

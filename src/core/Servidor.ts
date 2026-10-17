@@ -7,10 +7,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import { sequelize } from "../config/BaseDeDatos.js";
-import { ProductoRepository } from "../repository/producto.repository.js";
 import { initPedidoModels } from "../model/Pedido.model.js";
-import { PedidoService } from "../service/Pedido.service.js";
-import { createPedidoRouter } from "../routes/Pedido.routes.js";
 import { migrar } from "../migrations/raw.js";
 import { sembrar150Datos } from "../migrations/seed.js";
 //Clase Servidor
@@ -64,11 +61,7 @@ export class Servidor {
 
     // Módulo de Pedidos
     initPedidoModels(sequelize);
-
-    const productoRepository = new ProductoRepository(sequelize);
-    const pedidoService = new PedidoService(productoRepository, sequelize);
     
-    this.app.use("/Pedidos", createPedidoRouter(pedidoService));
     
     // Manejo de rutas no encontradas (sin "*")
     this.app.use((req, res) => {

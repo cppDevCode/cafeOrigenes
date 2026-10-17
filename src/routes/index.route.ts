@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import { ReporteRouter } from "./reporte.route.js";
 import { ProductoRouter } from "./producto.route.js";
+import { PedidoRouter } from "./pedido.routes.js";
 
 export default class Enrutador {
     private router: Router;
@@ -9,7 +10,8 @@ export default class Enrutador {
     this.router = express.Router();
     this.RutaEstado();
     this.rutaReporte();
-    this.rutaProducto()
+    this.rutaProducto();
+    this.rutaPedido();
     }
 
     private RutaEstado() {
@@ -30,6 +32,10 @@ export default class Enrutador {
 
     private rutaProducto() {
         this.router.use("/productos", new ProductoRouter().getRouter());
+    }
+
+    private rutaPedido() {
+        this.router.use("/pedidos", new PedidoRouter().getRouter());
     }
 
     public getRoutes() {

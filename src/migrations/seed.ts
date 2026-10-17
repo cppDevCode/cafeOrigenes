@@ -202,3 +202,9 @@ export async function sembrar150Datos(): Promise<void> {
   }
 }
 
+if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.endsWith('seed.js')) {
+  sembrar150Datos()
+    .then(() => sequelize.close())
+    .catch(() => process.exit(1));
+}
+
