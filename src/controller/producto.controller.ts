@@ -10,7 +10,8 @@ export class ProductoController {
             const productos: ProductoResponseDTO[] = await this.productoService.listar();
 
             return res.status(200).json(productos);
-        } catch {
+        } catch (error) {
+            console.error('Error al listar productos:', error);
             return res.status(500).json({ error: 'No se pudieron obtener los productos' });
         }
     };
@@ -30,7 +31,8 @@ export class ProductoController {
             }
 
             return res.status(200).json(producto);
-        } catch {
+        } catch (error) {
+            console.error(`Error al obtener producto ${id}:`, error);
             return res.status(500).json({ error: 'No se pudo obtener el producto' });
         }
     };

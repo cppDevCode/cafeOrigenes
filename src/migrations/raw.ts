@@ -6,11 +6,25 @@ export async function migrar(cerrarConexion = false): Promise<void> {
     console.log('Conexión establecida con la base de datos');
 
     await sequelize.query(`
-      CREATE TABLE IF NOT EXISTS productos (
+     CREATE TABLE IF NOT EXISTS productos (
         id SERIAL PRIMARY KEY,
-        nombre VARCHAR(100) NOT NULL,
-        tipo VARCHAR(50) NOT NULL,
-        precio_base DECIMAL(10,2) NOT NULL
+        nombre VARCHAR(100) NOT NULL UNIQUE,
+        tipo VARCHAR(20) NOT NULL
+          CHECK (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO', 'PASTELERIA')),
+        precio_base INTEGER NOT NULL CHECK (precio_base > 0),
+        tamano VARCHAR(20)
+          CHECK (tamano IN ('POCILLO', 'MEDIANO', 'TAZA_GRANDE')),
+        gramos INTEGER CHECK (gramos > 0),
+        variedad VARCHAR(20)
+          CHECK (variedad IN ('BRASIL', 'COLOMBIA', 'ETIOPIA')),
+
+        CONSTRAINT chk_cafe_o_pasteleria CHECK (
+          (tipo = 'PASTELERIA'
+            AND tamano IS NULL AND gramos IS NULL AND variedad IS NULL)
+          OR
+          (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO')
+            AND tamano IS NOT NULL AND gramos IS NOT NULL AND variedad IS NOT NULL)
+        )
       );
     `);
     console.log('Tabla "productos" creada (o ya existía)');
@@ -40,28 +54,6 @@ export async function migrar(cerrarConexion = false): Promise<void> {
         SELECT id, pedido_id, producto_id, cantidad, precio_unitario FROM pedido_items;
     `);
     console.log('Vista "items_pedido" creada (o ya existía)');
-      CREATE TABLE IF NOT EXISTS productos (
-        id SERIAL PRIMARY KEY,
-        nombre VARCHAR(100) NOT NULL UNIQUE,
-        tipo VARCHAR(20) NOT NULL
-          CHECK (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO', 'PASTELERIA')),
-        precio_base INTEGER NOT NULL CHECK (precio_base > 0),
-        tamano VARCHAR(20)
-          CHECK (tamano IN ('POCILLO', 'MEDIANO', 'TAZA_GRANDE')),
-        gramos INTEGER CHECK (gramos > 0),
-        variedad VARCHAR(20)
-          CHECK (variedad IN ('BRASIL', 'COLOMBIA', 'ETIOPIA')),
-
-        CONSTRAINT chk_cafe_o_pasteleria CHECK (
-          (tipo = 'PASTELERIA'
-            AND tamano IS NULL AND gramos IS NULL AND variedad IS NULL)
-          OR
-          (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO')
-            AND tamano IS NOT NULL AND gramos IS NOT NULL AND variedad IS NOT NULL)
-        )
-      );
-    `);
-    console.log('Tabla "productos" creada (o ya existía)');
 
     const [tablas] = await sequelize.query(
       `SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;`

@@ -4,21 +4,24 @@ import { sequelize } from '../config/BaseDeDatos.js';
 interface ProductoSeed {
   id: number;
   nombre: string;
-  tipo: string;
+  tipo: 'CAFE_EXPRESO' | 'CAFE_FILTRADO' | 'PASTELERIA';
   precioBase: number;
+  tamano?: 'POCILLO' | 'MEDIANO' | 'TAZA_GRANDE' | null;
+  gramos?: number | null;
+  variedad?: 'BRASIL' | 'COLOMBIA' | 'ETIOPIA' | null;
 }
 
 const productosIniciales: ProductoSeed[] = [
-  { id: 1, nombre: 'Café Expreso Pocillo (Colombia)', tipo: 'CAFE_EXPRESO', precioBase: 2500 },
-  { id: 2, nombre: 'Café Expreso Mediano (Brasil)', tipo: 'CAFE_EXPRESO', precioBase: 3200 },
-  { id: 3, nombre: 'Café Filtrado Pocillo (Etiopía)', tipo: 'CAFE_FILTRADO', precioBase: 2800 },
-  { id: 4, nombre: 'Café Filtrado Taza Grande (Colombia)', tipo: 'CAFE_FILTRADO', precioBase: 3800 },
-  { id: 5, nombre: 'Flat White Doble', tipo: 'CAFE_EXPRESO', precioBase: 4200 },
-  { id: 6, nombre: 'Medialuna de Manteca', tipo: 'PASTELERIA', precioBase: 1200 },
-  { id: 7, nombre: 'Croissant de Almendras', tipo: 'PASTELERIA', precioBase: 2600 },
-  { id: 8, nombre: 'Tarta de Manzana Artesanal', tipo: 'PASTELERIA', precioBase: 3500 },
-  { id: 9, nombre: 'Cheesecake de Frutos Rojos', tipo: 'PASTELERIA', precioBase: 4500 },
-  { id: 10, nombre: 'Alfajor Marplatense de Chocolate', tipo: 'PASTELERIA', precioBase: 1800 },
+  { id: 1, nombre: 'Café Expreso Pocillo (Colombia)', tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'POCILLO', gramos: 10, variedad: 'COLOMBIA' },
+  { id: 2, nombre: 'Café Expreso Mediano (Brasil)', tipo: 'CAFE_EXPRESO', precioBase: 3200, tamano: 'MEDIANO', gramos: 15, variedad: 'BRASIL' },
+  { id: 3, nombre: 'Café Filtrado Pocillo (Etiopía)', tipo: 'CAFE_FILTRADO', precioBase: 2800, tamano: 'POCILLO', gramos: 12, variedad: 'ETIOPIA' },
+  { id: 4, nombre: 'Café Filtrado Taza Grande (Colombia)', tipo: 'CAFE_FILTRADO', precioBase: 3800, tamano: 'TAZA_GRANDE', gramos: 20, variedad: 'COLOMBIA' },
+  { id: 5, nombre: 'Café Expreso Flat White (Brasil)', tipo: 'CAFE_EXPRESO', precioBase: 4200, tamano: 'MEDIANO', gramos: 18, variedad: 'BRASIL' },
+  { id: 6, nombre: 'Medialuna de Manteca', tipo: 'PASTELERIA', precioBase: 1200, tamano: null, gramos: null, variedad: null },
+  { id: 7, nombre: 'Croissant de Almendras', tipo: 'PASTELERIA', precioBase: 2600, tamano: null, gramos: null, variedad: null },
+  { id: 8, nombre: 'Tarta de Manzana Artesanal', tipo: 'PASTELERIA', precioBase: 3500, tamano: null, gramos: null, variedad: null },
+  { id: 9, nombre: 'Cheesecake de Frutos Rojos', tipo: 'PASTELERIA', precioBase: 4500, tamano: null, gramos: null, variedad: null },
+  { id: 10, nombre: 'Alfajor Marplatense de Chocolate', tipo: 'PASTELERIA', precioBase: 1800, tamano: null, gramos: null, variedad: null },
 ];
 
 export async function sembrar150Datos(): Promise<void> {
@@ -27,13 +30,27 @@ export async function sembrar150Datos(): Promise<void> {
     await sequelize.authenticate();
     console.log('Conexión con PostgreSQL establecida correctamente.');
 
-    // 1. Crear tablas si no existen
+    // 1. Crear tablas si no existen (idéntico a raw.ts con constraints)
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS productos (
         id SERIAL PRIMARY KEY,
-        nombre VARCHAR(100) NOT NULL,
-        tipo VARCHAR(50) NOT NULL,
-        precio_base DECIMAL(10, 2) NOT NULL
+        nombre VARCHAR(100) NOT NULL UNIQUE,
+        tipo VARCHAR(20) NOT NULL
+          CHECK (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO', 'PASTELERIA')),
+        precio_base INTEGER NOT NULL CHECK (precio_base > 0),
+        tamano VARCHAR(20)
+          CHECK (tamano IN ('POCILLO', 'MEDIANO', 'TAZA_GRANDE')),
+        gramos INTEGER CHECK (gramos > 0),
+        variedad VARCHAR(20)
+          CHECK (variedad IN ('BRASIL', 'COLOMBIA', 'ETIOPIA')),
+
+        CONSTRAINT chk_cafe_o_pasteleria CHECK (
+          (tipo = 'PASTELERIA'
+            AND tamano IS NULL AND gramos IS NULL AND variedad IS NULL)
+          OR
+          (tipo IN ('CAFE_EXPRESO', 'CAFE_FILTRADO')
+            AND tamano IS NOT NULL AND gramos IS NOT NULL AND variedad IS NOT NULL)
+        )
       );
 
       CREATE TABLE IF NOT EXISTS pedidos (
@@ -58,21 +75,25 @@ export async function sembrar150Datos(): Promise<void> {
     // 2. Limpiar datos existentes de forma segura
     await sequelize.query('TRUNCATE TABLE pedido_items, pedidos, productos RESTART IDENTITY CASCADE;');
 
-    // 3. Insertar productos
+    // 3. Insertar productos cumpliendo la constraint chk_cafe_o_pasteleria
     for (const prod of productosIniciales) {
       await sequelize.query(
-        `INSERT INTO productos (id, nombre, tipo, precio_base) VALUES (:id, :nombre, :tipo, :precioBase);`,
+        `INSERT INTO productos (id, nombre, tipo, precio_base, tamano, gramos, variedad)
+         VALUES (:id, :nombre, :tipo, :precioBase, :tamano, :gramos, :variedad);`,
         {
           replacements: {
             id: prod.id,
             nombre: prod.nombre,
             tipo: prod.tipo,
             precioBase: prod.precioBase,
+            tamano: prod.tamano ?? null,
+            gramos: prod.gramos ?? null,
+            variedad: prod.variedad ?? null,
           },
         }
       );
     }
-    console.log(`Se insertaron ${productosIniciales.length} productos en el catálogo.`);
+    console.log(`Se insertaron ${productosIniciales.length} productos en el catálogo cumpliendo constraints.`);
 
     // 4. Generar 150 pedidos con sus respectivos items
     // Distribución: 115 ENTREGADO, 25 PENDIENTE, 10 CANCELADO
@@ -90,12 +111,10 @@ export async function sembrar150Datos(): Promise<void> {
       const estado = estados[i - 1] ?? 'ENTREGADO';
 
       // Cada pedido tendrá entre 1 y 3 items
-      // Usamos una lógica pseudoaleatoria determinística basada en el índice
       const cantidadItems = (i % 3) + 1;
       const itemsDelPedido: { productoId: number; cantidad: number; precioUnitario: number; subtotal: number }[] = [];
 
       for (let j = 0; j < cantidadItems; j++) {
-        // Seleccionamos un producto variando con i y j
         const prodIndex = (i * 3 + j * 7) % productosIniciales.length;
         const producto = productosIniciales[prodIndex] ?? productosIniciales[0]!;
         const cantidad = ((i + j) % 4) + 1; // Entre 1 y 4 unidades
@@ -180,7 +199,6 @@ export async function sembrar150Datos(): Promise<void> {
   } catch (error) {
     console.error('Error durante la migración:', error);
     process.exit(1);
-  } 
+  }
 }
-
 
