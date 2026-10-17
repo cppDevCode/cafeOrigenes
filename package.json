@@ -10,8 +10,8 @@
     "test": "cross-env NODE_ENV=test vitest run",
     "lint": "eslint .",
     "prepare": "husky",
-    "seed": "tsx src/migrations/seed.ts",
-    "migrate": "tsx src/migrations/raw.ts"
+    "migrar": "tsx src/migrations/raw.ts",
+    "seed": "tsx src/migrations/seed.ts"
   },
   "keywords": [],
   "author": "",
