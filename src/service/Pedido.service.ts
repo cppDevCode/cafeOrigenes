@@ -1,7 +1,7 @@
 import type { Sequelize, OrderItem } from 'sequelize';
 import type { CrearPedidoDTO, IItemPedido, IPedido } from '../interfaces/pedido.interface.js';
 import type { IProductoRepository } from '../interfaces/producto.interface.js';
-import { Pedido } from '../model/Pedido.js';
+import { Pedido } from '../repository/pedido.repository.js';
 import { PedidoItemModel, PedidoModel } from '../model/Pedido.model.js';
 
 export class ProductoNoEncontradoError extends Error {
