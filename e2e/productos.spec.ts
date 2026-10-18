@@ -47,17 +47,17 @@ test.describe('Módulo de Productos E2E', () => {
 
       const productos: ProductoResponseDTO[] = await response.json();
 
-      const expresoColombia = productos.find((p) => p.id === 1);
-      expect(expresoColombia).toBeDefined();
-      expect(expresoColombia?.nombre).toBe('Café Expreso Pocillo (Colombia)');
-      expect(expresoColombia?.tipo).toBe('CAFE_EXPRESO');
-      expect(expresoColombia?.precio).toBe(4300);
+      const expresoBrasil = productos.find((p) => p.id === 1);
+      expect(expresoBrasil).toBeDefined();
+      expect(expresoBrasil?.nombre).toBe('Expreso Pocillo Brasil');
+      expect(expresoBrasil?.tipo).toBe('CAFE_EXPRESO');
+      expect(expresoBrasil?.precio).toBe(5020);
 
-      const medialuna = productos.find((p) => p.id === 6);
-      expect(medialuna).toBeDefined();
-      expect(medialuna?.nombre).toBe('Medialuna de Manteca');
-      expect(medialuna?.tipo).toBe('PASTELERIA');
-      expect(medialuna?.precio).toBe(1200);
+      const muffin = productos.find((p) => p.id === 19);
+      expect(muffin).toBeDefined();
+      expect(muffin?.nombre).toBe('Muffin de chocolate');
+      expect(muffin?.tipo).toBe('PASTELERIA');
+      expect(muffin?.precio).toBe(2500);
     });
   });
 
@@ -70,28 +70,28 @@ test.describe('Módulo de Productos E2E', () => {
 
       expect(prod).toMatchObject({
         id: 1,
-        nombre: 'Café Expreso Pocillo (Colombia)',
+        nombre: 'Expreso Pocillo Brasil',
         tipo: 'CAFE_EXPRESO',
         precioBase: 2500,
         tamano: 'POCILLO',
-        gramos: 10,
-        variedad: 'COLOMBIA',
-        precio: 4300,
+        gramos: 18,
+        variedad: 'BRASIL',
+        precio: 5020,
       });
     });
 
     test('debe retornar un producto de pastelería sin propiedades de café', async ({ request }) => {
-      const response = await request.get('/api/productos/6');
+      const response = await request.get('/api/productos/19');
 
       expect(response.status()).toBe(200);
       const prod: ProductoResponseDTO = await response.json();
 
       expect(prod).toMatchObject({
-        id: 6,
-        nombre: 'Medialuna de Manteca',
+        id: 19,
+        nombre: 'Muffin de chocolate',
         tipo: 'PASTELERIA',
-        precioBase: 1200,
-        precio: 1200,
+        precioBase: 2500,
+        precio: 2500,
       });
       expect(prod.tamano).toBeUndefined();
       expect(prod.gramos).toBeUndefined();
@@ -121,4 +121,3 @@ test.describe('Módulo de Productos E2E', () => {
     });
   });
 });
-

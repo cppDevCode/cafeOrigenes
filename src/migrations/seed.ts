@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { sequelize } from '../config/BaseDeDatos.js';
+import { PRECIO_POR_GRAMO } from '../utils/precioPorGramo.utils.js';
 
 interface ProductoSeed {
   id: number;
@@ -12,17 +13,36 @@ interface ProductoSeed {
 }
 
 const productosIniciales: ProductoSeed[] = [
-  { id: 1, nombre: 'Café Expreso Pocillo (Colombia)', tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'POCILLO', gramos: 10, variedad: 'COLOMBIA' },
-  { id: 2, nombre: 'Café Expreso Mediano (Brasil)', tipo: 'CAFE_EXPRESO', precioBase: 3200, tamano: 'MEDIANO', gramos: 15, variedad: 'BRASIL' },
-  { id: 3, nombre: 'Café Filtrado Pocillo (Etiopía)', tipo: 'CAFE_FILTRADO', precioBase: 2800, tamano: 'POCILLO', gramos: 12, variedad: 'ETIOPIA' },
-  { id: 4, nombre: 'Café Filtrado Taza Grande (Colombia)', tipo: 'CAFE_FILTRADO', precioBase: 3800, tamano: 'TAZA_GRANDE', gramos: 20, variedad: 'COLOMBIA' },
-  { id: 5, nombre: 'Café Expreso Flat White (Brasil)', tipo: 'CAFE_EXPRESO', precioBase: 4200, tamano: 'MEDIANO', gramos: 18, variedad: 'BRASIL' },
-  { id: 6, nombre: 'Medialuna de Manteca', tipo: 'PASTELERIA', precioBase: 1200, tamano: null, gramos: null, variedad: null },
-  { id: 7, nombre: 'Croissant de Almendras', tipo: 'PASTELERIA', precioBase: 2600, tamano: null, gramos: null, variedad: null },
-  { id: 8, nombre: 'Tarta de Manzana Artesanal', tipo: 'PASTELERIA', precioBase: 3500, tamano: null, gramos: null, variedad: null },
-  { id: 9, nombre: 'Cheesecake de Frutos Rojos', tipo: 'PASTELERIA', precioBase: 4500, tamano: null, gramos: null, variedad: null },
-  { id: 10, nombre: 'Alfajor Marplatense de Chocolate', tipo: 'PASTELERIA', precioBase: 1800, tamano: null, gramos: null, variedad: null },
+  // Expreso (precioBase 2500)
+  { id: 1,  nombre: 'Expreso Pocillo Brasil',       tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'POCILLO',     gramos: 18, variedad: 'BRASIL' },
+  { id: 2,  nombre: 'Expreso Pocillo Colombia',     tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'POCILLO',     gramos: 18, variedad: 'COLOMBIA' },
+  { id: 3,  nombre: 'Expreso Pocillo Etiopia',      tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'POCILLO',     gramos: 18, variedad: 'ETIOPIA' },
+  { id: 4,  nombre: 'Expreso Mediano Brasil',       tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'MEDIANO',     gramos: 27, variedad: 'BRASIL' },
+  { id: 5,  nombre: 'Expreso Mediano Colombia',     tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'MEDIANO',     gramos: 27, variedad: 'COLOMBIA' },
+  { id: 6,  nombre: 'Expreso Mediano Etiopia',      tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'MEDIANO',     gramos: 27, variedad: 'ETIOPIA' },
+  { id: 7,  nombre: 'Expreso Taza grande Brasil',   tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'TAZA_GRANDE', gramos: 36, variedad: 'BRASIL' },
+  { id: 8,  nombre: 'Expreso Taza grande Colombia', tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'TAZA_GRANDE', gramos: 36, variedad: 'COLOMBIA' },
+  { id: 9,  nombre: 'Expreso Taza grande Etiopia',  tipo: 'CAFE_EXPRESO', precioBase: 2500, tamano: 'TAZA_GRANDE', gramos: 36, variedad: 'ETIOPIA' },
+  // Filtrado (precioBase 3200)
+  { id: 10, nombre: 'Filtrado Pocillo Brasil',       tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'POCILLO',     gramos: 6,  variedad: 'BRASIL' },
+  { id: 11, nombre: 'Filtrado Pocillo Colombia',     tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'POCILLO',     gramos: 6,  variedad: 'COLOMBIA' },
+  { id: 12, nombre: 'Filtrado Pocillo Etiopia',      tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'POCILLO',     gramos: 6,  variedad: 'ETIOPIA' },
+  { id: 13, nombre: 'Filtrado Mediano Brasil',       tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'MEDIANO',     gramos: 15, variedad: 'BRASIL' },
+  { id: 14, nombre: 'Filtrado Mediano Colombia',     tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'MEDIANO',     gramos: 15, variedad: 'COLOMBIA' },
+  { id: 15, nombre: 'Filtrado Mediano Etiopia',      tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'MEDIANO',     gramos: 15, variedad: 'ETIOPIA' },
+  { id: 16, nombre: 'Filtrado Taza grande Brasil',   tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'TAZA_GRANDE', gramos: 25, variedad: 'BRASIL' },
+  { id: 17, nombre: 'Filtrado Taza grande Colombia', tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'TAZA_GRANDE', gramos: 25, variedad: 'COLOMBIA' },
+  { id: 18, nombre: 'Filtrado Taza grande Etiopia',  tipo: 'CAFE_FILTRADO', precioBase: 3200, tamano: 'TAZA_GRANDE', gramos: 25, variedad: 'ETIOPIA' },
+  // Pastelería (el precio final es el precioBase)
+  { id: 19, nombre: 'Muffin de chocolate',          tipo: 'PASTELERIA', precioBase: 2500, tamano: null, gramos: null, variedad: null },
+  { id: 20, nombre: 'Porción de torta selva negra', tipo: 'PASTELERIA', precioBase: 4200, tamano: null, gramos: null, variedad: null },
 ];
+
+// Precio final de un producto: misma regla que calcularPrecio() del dominio
+function precioFinal(p: ProductoSeed): number {
+  if (p.tipo === 'PASTELERIA') return p.precioBase;
+  return p.precioBase + (p.gramos ?? 0) * PRECIO_POR_GRAMO[p.variedad!];
+}
 
 export async function sembrar150Datos(): Promise<void> {
   try {
@@ -118,7 +138,7 @@ export async function sembrar150Datos(): Promise<void> {
         const prodIndex = (i * 3 + j * 7) % productosIniciales.length;
         const producto = productosIniciales[prodIndex] ?? productosIniciales[0]!;
         const cantidad = ((i + j) % 4) + 1; // Entre 1 y 4 unidades
-        const precioUnitario = producto.precioBase;
+        const precioUnitario = precioFinal(producto);
         const subtotal = cantidad * precioUnitario;
 
         itemsDelPedido.push({
